@@ -10,29 +10,29 @@ from ..utils import create_new_order, get_token
 
 class TestOrderCreation:
     @pytest.mark.parametrize(
-        'test_case',
+        'ingredients,expected_status,expected_string',
         [(empty_ingredients, HTTPStatus.BAD_REQUEST, no_ingredient_string),
          (valid_ingredients, HTTPStatus.OK, success_string),
          (invalid_ingredients, HTTPStatus.BAD_REQUEST, invalid_id_string)]
     )
     @allure.title('Тест на создание заказа для пользователя')
-    def test_order_authorized(self, test_case):
-        ingredients_json, expected_status, expected_string = test_case
+    def test_order_authorized(self, ingredients,
+                              expected_status, expected_string):
         token = get_token()
-        response = create_new_order(ingredients_json, token)
+        response = create_new_order(ingredients, token)
 
         assert response.status_code == expected_status
         assert expected_string in response.text
 
     @pytest.mark.parametrize(
-        'test_case',
+        'ingredients,expected_status,expected_string',
         [(empty_ingredients, HTTPStatus.BAD_REQUEST, no_ingredient_string),
          (valid_ingredients, HTTPStatus.OK, success_string),
          (invalid_ingredients, HTTPStatus.BAD_REQUEST, invalid_id_string)]
     )
     @allure.title('Тест на создание заказа для гостя')
-    def test_order_unauthorized(self, test_case):
-        ingredients_json, expected_status, expected_string = test_case
-        response = create_new_order(ingredients_json)
+    def test_order_unauthorized(self, ingredients,
+                                expected_status, expected_string):
+        response = create_new_order(ingredients)
         assert response.status_code == expected_status
         assert expected_string in response.text

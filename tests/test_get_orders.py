@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 import allure
-import pytest
 
 from ..data import success_false_string, success_string
 from ..utils import get_token, get_user_orders_list
@@ -9,18 +8,15 @@ from ..utils import get_token, get_user_orders_list
 
 class TestGetUserOrders:
     @allure.title('Тест на получение списка заказов аутентифицированного пользователя')  # noqa
-    @pytest.mark.parametrize(
-        'test_case',
-        [(True, HTTPStatus.OK, success_string),
-         (False, HTTPStatus.UNAUTHORIZED, success_false_string)])
-    def test_get_user_orders(self, test_case):
-        token = ''
-        is_authorised, expected_status, expected_string = test_case
+    def test_get_user_orders_authorized(self, test_case):
+        response = get_user_orders_list(get_token())
 
-        if is_authorised:
-            token = get_token()
+        assert response.status_code == HTTPStatus.OK
+        assert success_string in response.text
 
-        response = get_user_orders_list(token)
+    @allure.title('Тест на получение списка заказов аутентифицированного пользователя')  # noqa
+    def test_get_user_orders_unauthorized(self):
+        response = get_user_orders_list()
 
-        assert response.status_code == expected_status
-        assert expected_string in response.text
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert success_false_string in response.text

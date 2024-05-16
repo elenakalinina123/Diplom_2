@@ -75,7 +75,7 @@ def create_new_order(order_json, token=None):
 
 
 @allure.step('получаем список заказов')
-def get_user_orders_list(token):
+def get_user_orders_list(token=None):
     kwargs = {}
     if token:
         kwargs.update({'headers': {"Authorization": token}})
