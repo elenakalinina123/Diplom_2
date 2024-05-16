@@ -1,0 +1,38 @@
+from http import HTTPStatus
+
+import allure
+import pytest
+
+from ..data import (empty_ingredients, invalid_id_string, invalid_ingredients,
+                    no_ingredient_string, success_string, valid_ingredients)
+from ..utils import create_new_order, get_token
+
+
+class TestOrderCreation:
+    @pytest.mark.parametrize(
+        'ingredients,expected_status,expected_string',
+        [(empty_ingredients, HTTPStatus.BAD_REQUEST, no_ingredient_string),
+         (valid_ingredients, HTTPStatus.OK, success_string),
+         (invalid_ingredients, HTTPStatus.BAD_REQUEST, invalid_id_string)]
+    )
+    @allure.title('Тест на создание заказа для пользователя')
+    def test_order_authorized(self, ingredients,
+                              expected_status, expected_string):
+        token = get_token()
+        response = create_new_order(ingredients, token)
+
+        assert response.status_code == expected_status
+        assert expected_string in response.text
+
+    @pytest.mark.parametrize(
+        'ingredients,expected_status,expected_string',
+        [(empty_ingredients, HTTPStatus.BAD_REQUEST, no_ingredient_string),
+         (valid_ingredients, HTTPStatus.OK, success_string),
+         (invalid_ingredients, HTTPStatus.BAD_REQUEST, invalid_id_string)]
+    )
+    @allure.title('Тест на создание заказа для гостя')
+    def test_order_unauthorized(self, ingredients,
+                                expected_status, expected_string):
+        response = create_new_order(ingredients)
+        assert response.status_code == expected_status
+        assert expected_string in response.text
