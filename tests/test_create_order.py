@@ -21,8 +21,6 @@ class TestOrderCreation:
         token = get_token()
         response = create_new_order(ingredients_json, token)
 
-        print(response.text)
-
         assert response.status_code == expected_status
         assert expected_string in response.text
 
